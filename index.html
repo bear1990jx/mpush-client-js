@@ -107,10 +107,10 @@
             }
         }
 
-        function pushMessage(channelId, message) {
+        function pushMessage(channelId, msgContent) {
             config.log.info("<<< send pushMessage message, channelId=" + channelId);
             var packet = Packet(Command.PUSH, {
-                content: '{channelId:\"' + channelId + '\",message:\"' + message + '\"}'
+                content: '{channelId:\"' + channelId + '\",msgContent:\"' + msgContent + '\"}'
             });
             send(packet);
         }
@@ -343,9 +343,9 @@
     }
 
     function pushMessage() {
-        var message = $("message").value;
+        var msgContent = $("msgContent").value;
         var channelId = $("channelId").value;
-        mpush.push(channelId, message);
+        mpush.push(channelId, msgContent);
     }
 
     function clean() {
@@ -365,7 +365,7 @@
     <input type="button" value="bind" onclick="bind()">
     <br>
     <label> push message:
-        <input type="text" id="message" value="hello world">
+        <input type="text" id="msgContent" value="hello world">
     </label>
     <label> push channelId:
         <input type="text" id="channelId" value="c8a613d012b6425a9b030255ed3b1e96">
