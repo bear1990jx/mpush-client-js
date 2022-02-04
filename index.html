@@ -5,6 +5,14 @@
     <title>Message 客户端</title>
 </head>
 <body>
+<!--
+测试方法
+1 获取wsToken，并且填充在handshake的data里面
+2 更新channelId
+3 更新userId
+
+
+-->
 
 <script type="text/javascript">
     "use strict";
@@ -93,16 +101,16 @@
                 config.log.info("<<< send bindUser message, tags=" + tags);
                 session.userId = userId;
                 session.tags = tags;
-                send(Packet(Command.BIND, {userId: userId, data: "44f9a2b518124e49a3e2d8edfe28f333", tags: tags}));
+                send(Packet(Command.BIND, {userId: userId, data: "f2790669ac294a72a2f88e2b684ba39e", tags: tags}));
             } else {
                 config.log.error("user " + userId + " already bind");
             }
         }
 
-        function pushMessage(userId, msg) {
-            config.log.info("<<< send pushMessage message, userId=" + userId);
+        function pushMessage(channelId, message) {
+            config.log.info("<<< send pushMessage message, channelId=" + channelId);
             var packet = Packet(Command.PUSH, {
-                content: '{userId:\"' + userId + '\",msg:\"' + msg + '\"}'
+                content: '{channelId:\"' + channelId + '\",message:\"' + message + '\"}'
             });
             send(packet);
         }
@@ -336,8 +344,8 @@
 
     function pushMessage() {
         var message = $("message").value;
-        var userId = $("pUserId").value;
-        mpush.push(userId, message);
+        var channelId = $("channelId").value;
+        mpush.push(channelId, message);
     }
 
     function clean() {
@@ -352,15 +360,15 @@
     <input type="button" value="Connect" onclick="connect()">
     <br>
     <label> Bind User:
-        <input type="text" id="userId" value="4f154c0a91ef49019017b73179ebc25c">
+        <input type="text" id="userId" value="373950192b8b46c4b3c201489cb2cf10">
     </label>
     <input type="button" value="bind" onclick="bind()">
     <br>
     <label> push message:
         <input type="text" id="message" value="hello world">
     </label>
-    <label> push userId:
-        <input type="text" id="pUserId" value="4f154c0a91ef49019017b73179ebc25c">
+    <label> push channelId:
+        <input type="text" id="channelId" value="c8a613d012b6425a9b030255ed3b1e96">
     </label>
     <input type="button" value="push" onclick="pushMessage()">
     <br>
