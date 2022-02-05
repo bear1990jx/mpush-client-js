@@ -101,7 +101,7 @@
                 config.log.info("<<< send bindUser message, tags=" + tags);
                 session.userId = userId;
                 session.tags = tags;
-                send(Packet(Command.BIND, {userId: userId, data: "f2790669ac294a72a2f88e2b684ba39e", tags: tags}));
+                send(Packet(Command.BIND, {userId: userId, data: "25f2a7af090d48bbb2fa76b233f7d7f5", tags: tags}));
             } else {
                 config.log.error("user " + userId + " already bind");
             }
