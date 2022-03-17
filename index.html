@@ -15,6 +15,8 @@
 -->
 
 <script type="text/javascript">
+    var tmpToken = "7e98c5370a034909914823985a9e4768";
+
     "use strict";
     (function (window) {
         let socket, session = {}, ID_SEQ = 1;
@@ -64,6 +66,7 @@
         };
 
         const Command = {
+            HEARTBEAT: 1,
             HANDSHAKE: 2,
             BIND: 5,
             UNBIND: 6,
@@ -101,7 +104,8 @@
                 config.log.info("<<< send bindUser message, tags=" + tags);
                 session.userId = userId;
                 session.tags = tags;
-                send(Packet(Command.BIND, {userId: userId, data: "25f2a7af090d48bbb2fa76b233f7d7f5", tags: tags}));
+                // send(Packet(Command.BIND, {userId: userId, data: "9663a88b496c42ef866a7520d3b7204b", tags: tags}));
+                send(Packet(Command.BIND, {userId: userId, data: tmpToken, tags: tags}));
             } else {
                 config.log.error("user " + userId + " already bind");
             }
@@ -111,6 +115,13 @@
             config.log.info("<<< send pushMessage message, channelId=" + channelId);
             var packet = Packet(Command.PUSH, {
                 content: '{channelId:\"' + channelId + '\",msgContent:\"' + msgContent + '\"}'
+            });
+            send(packet);
+        }
+
+        function heartBeat() {
+            var packet = Packet(Command.HEARTBEAT, {
+                timestamp: 11111
             });
             send(packet);
         }
@@ -275,7 +286,8 @@
             connect: doConnect,
             close: doClose,
             bindUser: bindUser,
-            push: pushMessage
+            push: pushMessage,
+            heartbeat: heartBeat
         }
         window.Get = function (opt) {
             opt = opt || {}
@@ -318,18 +330,25 @@
             log: log,
             listener: {
                 onOpened: function (event) {
+                    console.log("onOpened.....");
+                    console.log(event);
                 },
                 onClosed: function (event) {
+                    console.log("onClosed.....");
                 },
                 onHandshake: function () {
+                    console.log("onHandshake.....");
                     userInfo.status = 0;
                 },
                 onReceivePush: function () {
+                    console.log("onReceivePush.....");
                 },
                 onBindUser: function (success) {
+                    console.log("onBindUser.....");
                     userInfo.status = 1;
                 },
                 onKickUser: function (userId, deviceId) {
+                    console.log("onKickUser.....");
                     userInfo.status = -1;
                 }
             }
@@ -352,15 +371,21 @@
         $("responseText").value = "";
     }
 
+    function heartbeat() {
+        mpush.heartbeat();
+    }
+
 </script>
 <form onsubmit="return false;">
     <label> Server Url:
+        <!--<input type="text" id="url" value="ws://106.54.220.134:8008/">-->
         <input type="text" id="url" value="ws://127.0.0.1:8008/">
     </label>
     <input type="button" value="Connect" onclick="connect()">
     <br>
     <label> Bind User:
-        <input type="text" id="userId" value="373950192b8b46c4b3c201489cb2cf10">
+<!--        <input type="text" id="userId" value="c6a5a286608c4ab89b5044ccb8965ab3">-->
+        <input type="text" id="userId" value="82262313067948288bea55a6b6ad252a">
     </label>
     <input type="button" value="bind" onclick="bind()">
     <br>
@@ -368,12 +393,16 @@
         <input type="text" id="msgContent" value="hello world">
     </label>
     <label> push channelId:
-        <input type="text" id="channelId" value="c8a613d012b6425a9b030255ed3b1e96">
+        <input type="text" id="channelId" value="f523c84163e34b7da51902699c7f9bd5">
     </label>
     <input type="button" value="push" onclick="pushMessage()">
     <br>
     <label> Clean:
         <input type="button" value="clean" onclick="clean()">
+    </label>
+    <br>
+    <label> onOpen:
+        <input type="button" value="heart beat" onclick="heartbeat()">
     </label>
 
     <h3><label for="responseText">Output</label></h3>
